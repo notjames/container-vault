@@ -38,7 +38,7 @@ podTemplate(label: "${project_name}", containers: [
             """
 
             kubesh "docker run --rm -it ${project_name}:${env.JOB_BASE_NAME}.${env.BUILD_ID} $do_stuff"
-          {
+          }
         }
 
         // only push from master.   check that we are on samsung-cnct fork
