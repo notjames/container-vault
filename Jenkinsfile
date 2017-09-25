@@ -29,10 +29,7 @@ podTemplate(label: "${project_name}", containers: [
         }
 
         stage('Test') {
-          steps
-          {
-            kubesh "docker run -e ENVIRONMENT=test --rm -it ${project_name}:${env.JOB_BASE_NAME}.${env.BUILD_ID}"
-          }
+          kubesh "docker run -e ENVIRONMENT=test --rm -it ${project_name}:${env.JOB_BASE_NAME}.${env.BUILD_ID}"
         }
 
         // only push from master.   check that we are on samsung-cnct fork
