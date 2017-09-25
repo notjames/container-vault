@@ -11,7 +11,7 @@ podTemplate(label: "${project_name}", containers: [
   ], volumes: [
     hostPathVolume(hostPath: '/var/run/docker.sock', mountPath: '/var/run/docker.sock'),
     hostPathVolume(hostPath: '/var/lib/docker/scratch', mountPath: '/mnt/scratch'),
-    secretVolume(mountPath: '/home/jenkins/.docker/', secretName: 'samsung-cnct-quay-robot-dockercfg')
+    secretVolume(mountPath: '/home/jenkins/.docker/', secretName: 'samsung-cnct+containervaultrw')
   ]) {
     node("${project_name}") {
       customContainer('docker') {
