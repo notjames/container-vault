@@ -31,7 +31,7 @@ podTemplate(label: "${project_name}", containers: [
         stage('Test') {
           steps
           {
-            kubesh "docker run --rm -it -v test:/var/tmp ${project_name}:${env.JOB_BASE_NAME}.${env.BUILD_ID} /var/tmp/vault.sh"
+            kubesh "docker run -e ENVIRONMENT=test --rm -it ${project_name}:${env.JOB_BASE_NAME}.${env.BUILD_ID}"
           }
         }
 
