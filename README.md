@@ -1,4 +1,4 @@
-[![Build Status](https://common-jenkins.kubeme.io/buildStatus/icon?job=container-vault/initial)](https://common-jenkins.kubeme.io/job/container-vault/initial)
+[![Build Status](https://common-jenkins.kubeme.io/buildStatus/icon?job=container-vault/master)](https://common-jenkins.kubeme.io/job/container-vault/master)
 
 This project was copied from an older, lesser-used repo [samsung-cnct/vault](https://github.com/samsung-cnct/vault). This project was started using the [solas-container](https://github.com/samsung-cnct/solas-container) repo.
 
