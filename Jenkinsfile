@@ -36,7 +36,7 @@ podTemplate(label: "${project_name}", containers: [
         stage('Publish') {
           if (git_branch.contains(publish_branch) && git_uri.contains(github_org)) {
             withCredentials([usernamePassword(credentialsId: 'quay_credentials', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-              kubesh("helm registry login ${registry} -u ${USERNAME} -p ${PASSWORD} && cd ${chart_name} && helm registry push ${registry}/${registry_user}/${chart_name} -c stable")
+              //kubesh("helm registry login ${registry} -u ${USERNAME} -p ${PASSWORD} && cd ${chart_name} && helm registry push ${registry}/${registry_user}/${chart_name} -c stable")
 
               kubesh "docker login -u ${USERNAME} -p ${PASSWORD} quay.io"
               kubesh "docker tag ${project_name}:${env.JOB_BASE_NAME}.${env.BUILD_ID} quay.io/${quay_org}/${project_name}:${image_tag}"

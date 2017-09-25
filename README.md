@@ -5,3 +5,7 @@ This project was copied from an older, lesser-used repo [samsung-cnct/vault](htt
 The purpose of this repo is to maintain the Docker container assets for the Hashicorp Vault application for [Kraken](https://github.com/samsung-cnct/kraken) Cluster-ops et al for Samsung-CNCT projects.
 
 This project will automaticaly get checked by Jenkins and then, upon successful testing, built and submitted to Quay.
+
+One can test the container by running the following:
+
+    docker run -it -e ENVIRONMENT=test vault:<version>
