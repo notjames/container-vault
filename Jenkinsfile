@@ -31,13 +31,7 @@ podTemplate(label: "${project_name}", containers: [
         stage('Test') {
           steps
           {
-            do_stuff="""
-	      export VAULT_ADDR="http://0.0.0.0:80"
-
-	      {vault init && vault status} || exit $?
-            """
-
-            kubesh "docker run --rm -it ${project_name}:${env.JOB_BASE_NAME}.${env.BUILD_ID} $do_stuff"
+            kubesh "docker run --rm -it -v test:/var/tmp ${project_name}:${env.JOB_BASE_NAME}.${env.BUILD_ID} /var/tmp/vault.sh"
           }
         }
 
