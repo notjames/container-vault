@@ -95,9 +95,10 @@ if [ "$1" = 'vault' ]; then
     set -- gosu vault "$@"
 fi
 
-if [[ $ENVIRONMENT == test ]]
+if [[ $RUN_TESTS == true ]]
 then
-  /var/tmp/test-run-vault.sh
+  test-run-vault.sh
+  exit $?
 else
   exec "$@"
 fi

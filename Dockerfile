@@ -4,17 +4,15 @@ MAINTAINER Samsung SDS
 
 # This is the release of Vault to pull in.
 ENV VAULT_VERSION    0.8.3
-
-# For SDS 
-ENV ENVIRONMENT      prod
+ENV RUN_TESTS        false
 
 # This is the release of https://github.com/hashicorp/docker-base to pull in order
 # to provide HashiCorp-built versions of basic utilities like dumb-init and gosu.
 ENV DOCKER_BASE_VERSION=0.0.4
 
 # test battery script
-COPY test/config.json /etc/vault/cfg/test-config.json
-COPY test/test-run-vault.sh /var/tmp/test-run-vault.sh
+COPY test/config.json /vault/config/local.json
+COPY test/test-run-vault.sh /usr/local/bin/test-run-vault.sh
 
 # Create a vault user and group first so the IDs get set the same way,
 # even as the rest of this may change over time.

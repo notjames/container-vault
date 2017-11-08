@@ -1,8 +1,9 @@
 #!/bin/sh
 
-export VAULT_ADDR=http://0.0.0.0:8200
+export VAULT_ADDR=http://127.0.0.1:8200
 
-(/usr/local/bin/vault server -config /etc/vault/cfg/test-config.json &)
+(vault server -config /vault/config/local.json &)
+sleep 2
 
 if vault init
 then
@@ -16,7 +17,9 @@ then
     echo >&2 "TEST FAILED: vault 'status' did not exist with 0"
   fi
 else
-    echo >&2 "TEST FAILED: vault 'init' did not exist with 0"
+  ec=$?
+  echo >&2 "TEST FAILED: vault 'init' did not exist with 0"
+  exit $ec
 fi
 
 killall vault
