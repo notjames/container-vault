@@ -19,7 +19,7 @@ COPY test/test-run-vault.sh /usr/local/bin/test-run-vault.sh
 RUN addgroup vault &&     adduser -S -G vault vault
 
 # Set up certificates, our base tools, and Vault.
-RUN apk add --no-cache ca-certificates gnupg openssl libcap && \
+RUN apk add --no-cache ca-certificates gnupg openssl libcap jq && \
     gpg --keyserver pgp.mit.edu --recv-keys 91A6E7F85D05C65630BEF18951852D87348FFC4C && \
     mkdir -p /tmp/build && \
     cd /tmp/build && \
@@ -38,7 +38,7 @@ RUN apk add --no-cache ca-certificates gnupg openssl libcap && \
     unzip -d /bin vault_${VAULT_VERSION}_linux_amd64.zip && \
     cd /tmp && \
     rm -rf /tmp/build && \
-    apk del gnupg openssl && \
+    apk del openssl && \
     rm -rf /root/.gnupg
 
 # /vault/logs is made available to use as a location to store audit logs, if
