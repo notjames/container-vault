@@ -19,7 +19,7 @@ COPY test/test-run-vault.sh /usr/local/bin/test-run-vault.sh
 RUN addgroup vault &&     adduser -S -G vault vault
 
 # Set up certificates, our base tools, and Vault.
-RUN apk add --no-cache ca-certificates gnupg openssl libcap jq docker && \
+RUN apk add --no-cache ca-certificates gnupg openssl libcap jq jo && \
     gpg --keyserver pgp.mit.edu --recv-keys 91A6E7F85D05C65630BEF18951852D87348FFC4C && \
     mkdir -p /tmp/build && \
     cd /tmp/build && \
@@ -41,11 +41,8 @@ RUN apk add --no-cache ca-certificates gnupg openssl libcap jq docker && \
     apk del openssl && \
     rm -rf /root/.gnupg
 
-# dependencies from source
-RUN [ -x build/jo/pkg/jo ] || echo "Please run build/jo/make.sh first"
-COPY build/jo/pkg/jo /usr/local/bin/jo
-
-WORKDIR ../../
+# copy deps into the container
+COPY pkgs/* /usr/local/bin/
 
 # /vault/logs is made available to use as a location to store audit logs, if
 # desired; /vault/file is made available to use as a location with the file
