@@ -19,7 +19,7 @@ COPY test/test-run-vault.sh /usr/local/bin/test-run-vault.sh
 RUN addgroup vault &&     adduser -S -G vault vault
 
 # Set up certificates, our base tools, and Vault.
-RUN apk add --no-cache ca-certificates gnupg openssl libcap jq && \
+RUN apk add --no-cache ca-certificates gnupg openssl libcap jq docker && \
     gpg --keyserver pgp.mit.edu --recv-keys 91A6E7F85D05C65630BEF18951852D87348FFC4C && \
     mkdir -p /tmp/build && \
     cd /tmp/build && \
@@ -40,6 +40,12 @@ RUN apk add --no-cache ca-certificates gnupg openssl libcap jq && \
     rm -rf /tmp/build && \
     apk del openssl && \
     rm -rf /root/.gnupg
+
+# dependencies from source
+RUN [ -x build/jo/pkg/jo ] || echo "Please run build/jo/make.sh first"
+COPY build/jo/pkg/jo /usr/local/bin/jo
+
+WORKDIR ../../
 
 # /vault/logs is made available to use as a location to store audit logs, if
 # desired; /vault/file is made available to use as a location with the file
@@ -69,7 +75,6 @@ EXPOSE 8200
 # For production derivatives of this container, you shoud add the IPC_LOCK
 # capability so that Vault can mlock memory.
 COPY bin/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
-COPY bin/jo /usr/local/bin/jo
 ENTRYPOINT ["docker-entrypoint.sh"]
 
 # By default you'll get a single-node development server that stores everything
