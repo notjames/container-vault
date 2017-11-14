@@ -42,6 +42,7 @@ RUN apk add --no-cache ca-certificates gnupg openssl libcap jq && \
     rm -rf /root/.gnupg
 
 # copy deps into the container
+RUN ls -altr pkgs/*
 COPY pkgs/* /usr/local/bin/
 
 # /vault/logs is made available to use as a location to store audit logs, if
