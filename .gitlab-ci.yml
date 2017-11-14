@@ -1,0 +1,56 @@
+image: docker:latest
+
+services:
+  - docker:dind
+
+variables:
+  DOCKER_DRIVER: overlay2
+  DOCKER_HOST: tcp://localhost:2375
+  IMAGE_REPO: quay.io
+  IMAGE_REPO_ORG: samsung_cnct
+  IMAGE_DEVL_NAME: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME-$CI_PIPELINE_ID
+  IMAGE_PROD_NAME: $IMAGE_REPO/$IMAGE_REPO_ORG/$CI_PROJECT_NAME:$CI_COMMIT_REF_NAME
+
+before_script:
+  - docker info
+  - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+  - docker login -u $IMAGE_REPO_USER -p $IMAGE_REPO_PASSWORD $IMAGE_REPO
+
+stages:
+  - build
+  - test
+  - publish
+
+build:
+  stage: build
+  script:
+  - ./build $IMAGE_DEVL_NAME
+  - docker push $IMAGE_DEVL_NAME
+
+test:
+  stage: test
+  script:
+  - docker pull $IMAGE_DEVL_NAME
+  - docker run -e RUN_TESTS=true $IMAGE_DEVL_NAME 
+
+#YAML templating -> https://git.cnct.io/help/ci/yaml/README.md#special-yaml-features
+.publish_script_template:
+  script: &publish_script
+  - docker pull $IMAGE_DEVL_NAME
+  - docker tag $IMAGE_DEVL_NAME $IMAGE_PROD_NAME
+  - docker push $IMAGE_PROD_NAME
+
+publish-latest:
+  stage: publish
+  variables:
+    IMAGE_PROD_NAME: $IMAGE_REPO/$IMAGE_REPO_ORG/$CI_PROJECT_NAME:latest
+  only:
+    - master
+  script: *publish_script
+
+publish-version:
+  stage: publish
+  only:
+    - /v[0-9]+\.[0-9]+\.[0-9]+[0-9A-Za-z-]?/
+  script: *publish_script
+
