@@ -1,6 +1,7 @@
 #!/bin/bash
 
 #shopt -s nullglob
+lsb_release || cat /etc/lsb_release
 echo $PATH
 ls /usr/local/bin
 
