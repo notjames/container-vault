@@ -10,7 +10,7 @@ ENV RUN_TESTS        false
 # to provide HashiCorp-built versions of basic utilities like dumb-init and gosu.
 ENV DOCKER_BASE_VERSION=0.0.4
 
-RUN ls -altr
+RUN ls -altr /home
 
 # test battery script
 COPY test/config.json /vault/config/local.json
