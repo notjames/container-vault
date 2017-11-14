@@ -1,13 +1,5 @@
 #!/bin/bash
 
-#shopt -s nullglob
-if ! which make
-then
-  apk add --no-cache alpine-sdk build-base
-fi
-echo $PATH
-ls /usr/local/bin
-
 TAG=$1
 BASE=$PWD
 
@@ -23,6 +15,17 @@ build_deps()
     done
 }
 
+if ! which make
+then
+  if apk add --no-cache alpine-sdk build-base
+  then
+    echo "done"
+  else
+    echo >&2 "Hmm, try something else. Sorry it didn't work out."
+    exit 2
+  fi
+fi
+
 if [[ -n "$TAG" ]] 
 then
   # create deps in pkgs path
@@ -33,7 +36,8 @@ then
   # now build main vault container
   if docker build -t $TAG .
   then
-    sudo rm -rf pkgs/* 2>/dev/null
+    ls -altr pkgs/*
+    rm -rf pkgs/* 2>/dev/null
     echo "done"
   else
     ec=$?
