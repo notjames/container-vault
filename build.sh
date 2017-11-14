@@ -13,7 +13,7 @@ build_deps()
         cd $dep && make
       fi
 
-      ls -altr $BASE/pkgs/
+      ls -altr $BASE
     done
 }
 
