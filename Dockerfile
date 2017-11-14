@@ -41,6 +41,9 @@ RUN apk add --no-cache ca-certificates gnupg openssl libcap jq && \
     apk del openssl && \
     rm -rf /root/.gnupg
 
+# copy deps into the container
+COPY pkgs/* /usr/local/bin/
+
 # /vault/logs is made available to use as a location to store audit logs, if
 # desired; /vault/file is made available to use as a location with the file
 # storage backend, if desired; the server will be started with /vault/config as

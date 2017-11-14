@@ -6,6 +6,26 @@ The purpose of this repo is to maintain the Docker container assets for the Hash
 
 This project will automaticaly get checked by Jenkins and then, upon successful testing, built and submitted to Quay.
 
+
+## Set up your environment for dependencies
+This will likely change in the future, but for now this is what we got.
+
+If you have dependencies that need to be injected into the Vault container, create a directory under
+`build` reflecting your required dependency IE
+
+    mkdir -p build/<depname>
+
+Make sure you have a `pkg` directory in your directory tree that is linked to the container `pkgs` directory:
+
+
+    ln -s $PWD/pkgs $PWD/build/<depname>/pkg
+
+Create a script, makefile, rakefile, etc that builds/compiles your dependency. Copy or mv what you need from your dep tree
+to the `pkg` directory in your dep directory. The Vault container will automatically suck it into `/usr/local/bin/` in the container.
+If that's not the desired result then you'll need to season the Vault Dockerfile to taste.
+
+## Build
+
 One can test the container by running the following:
 
     docker run -it -e ENVIRONMENT=test vault:<version>
