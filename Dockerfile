@@ -1,6 +1,6 @@
 FROM alpine:3.6
 MAINTAINER Jeff Mitchell <jeff@hashicorp.com> (@jefferai)
-MAINTAINER Samsung SDS
+LABEL maintainer="Samsung SDS - J. Conner <snafu.x@gmail.com>"
 
 # This is the release of Vault to pull in.
 ENV VAULT_VERSION    0.8.3

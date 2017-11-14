@@ -1,14 +1,18 @@
 #!/bin/bash
+shopt -s nullglob
 
 TAG=$1
+BASE=$PWD
 
 build_deps()
 {
   cd build && \
-    for dep in $(find . -maxdepth 1 -type d)
+    for dep in *
     do
-      cd $dep && \
-        ./make.sh
+      if [[ -d $dep ]]
+      then
+        cd $dep && make
+      fi
     done
 }
 
@@ -16,6 +20,8 @@ if [[ -n "$TAG" ]]
 then
   # create deps in pkgs path
   build_deps
+
+  cd $BASE
 
   # now build main vault container
   if docker build -t $TAG .
