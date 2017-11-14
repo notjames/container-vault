@@ -17,10 +17,9 @@ If you have dependencies that need to be injected into the Vault container, crea
 
 Make sure you have a `pkg` directory in your directory tree that is linked to the container `pkgs` directory:
 
-
     ln -s $PWD/pkgs $PWD/build/<depname>/pkg
 
-Create a script, makefile, rakefile, etc that builds/compiles your dependency. Copy or mv what you need from your dep tree
+Create a makefile that builds/compiles your dependency. Copy or mv what you need from your dep tree
 to the `pkg` directory in your dep directory. The Vault container will automatically suck it into `/usr/local/bin/` in the container.
 If that's not the desired result then you'll need to season the Vault Dockerfile to taste.
 
