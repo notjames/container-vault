@@ -12,8 +12,6 @@ build_deps()
       then
         cd $dep && make
       fi
-
-      ls -altr $BASE
     done
 }
 
