@@ -1,6 +1,8 @@
 #!/bin/bash
 
 #shopt -s nullglob
+echo $PATH
+ls /usr/local/bin
 
 TAG=$1
 BASE=$PWD
