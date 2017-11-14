@@ -19,7 +19,7 @@ COPY test/test-run-vault.sh /usr/local/bin/test-run-vault.sh
 RUN addgroup vault &&     adduser -S -G vault vault
 
 # Set up certificates, our base tools, and Vault.
-RUN apk add --no-cache ca-certificates gnupg openssl libcap jq jo && \
+RUN apk add --no-cache ca-certificates gnupg openssl libcap jq && \
     gpg --keyserver pgp.mit.edu --recv-keys 91A6E7F85D05C65630BEF18951852D87348FFC4C && \
     mkdir -p /tmp/build && \
     cd /tmp/build && \
