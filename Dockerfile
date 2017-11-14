@@ -41,8 +41,7 @@ RUN apk add --no-cache ca-certificates gnupg openssl libcap jq && \
     unzip -d /bin vault_${VAULT_VERSION}_linux_amd64.zip && \
     cd /tmp && \
     rm -rf /tmp/build && \
-    apk del openssl && \
-    rm -rf /root/.gnupg
+    apk del openssl
 
 # /vault/logs is made available to use as a location to store audit logs, if
 # desired; /vault/file is made available to use as a location with the file
