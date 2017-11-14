@@ -1,7 +1,10 @@
 #!/bin/bash
 
 #shopt -s nullglob
-lsb_release || cat /etc/lsb_release
+if ! which make
+then
+  apk add --no-cache alpine-sdk build-base
+fi
 echo $PATH
 ls /usr/local/bin
 
