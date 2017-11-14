@@ -1,5 +1,6 @@
 #!/bin/bash
-shopt -s nullglob
+
+#shopt -s nullglob
 
 TAG=$1
 BASE=$PWD
