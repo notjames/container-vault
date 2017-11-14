@@ -36,7 +36,7 @@ then
   # now build main vault container
   if docker build -t $TAG .
   then
-    ls -altr pkgs/*
+    ls -altr pkgs/* 2>/dev/null
     rm -rf pkgs/* 2>/dev/null
     echo "done"
   else
