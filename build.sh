@@ -35,8 +35,8 @@ then
 
   cd $BASE
 
-  echo "None of those worked. Is jo anywhere on the system?"
-  find / -name jo
+  echo "Is jo anywhere on the system BESIDES the jo dir?"
+  find / -name 'jo' -type f
 
   if [[ $(find pkgs/ -maxdepth 1 -type f -name '[a-zA-Z]*' | wc -l) == 0 ]] 
   then 
