@@ -35,7 +35,9 @@ then
 
   cd $BASE
 
-  if [[ $(find pkgs/ -maxdepth 1 -type f -name '[a-zA-Z]*' | wc -l) == 0 ]] 
+  ls -altr
+
+  if [[ $(find pkg/ -maxdepth 1 -type f -name '[a-zA-Z]*' | wc -l) == 0 ]] 
   then 
     echo "WARN: Hmm. No dep packages in pkgs/; this is likely bad, but moving on."
   fi
