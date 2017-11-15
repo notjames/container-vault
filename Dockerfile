@@ -14,9 +14,6 @@ ENV DOCKER_BASE_VERSION=0.0.4
 COPY test/config.json /vault/config/local.json
 COPY test/test-run-vault.sh /usr/local/bin/test-run-vault.sh
 
-# copy deps into the container
-COPY pkgs/* /usr/local/bin/
-
 # Create a vault user and group first so the IDs get set the same way,
 # even as the rest of this may change over time.
 RUN addgroup vault &&     adduser -S -G vault vault
@@ -52,6 +49,9 @@ RUN mkdir -p /vault/logs && \
     mkdir -p /vault/file && \
     mkdir -p /vault/config && \
     chown -R vault:vault /vault
+
+# copy deps into the container
+COPY pkgs/* /usr/local/bin/
 
 # Expose the logs directory as a volume since there's potentially long-running
 # state in there
