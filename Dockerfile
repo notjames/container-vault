@@ -38,11 +38,7 @@ RUN apk add --no-cache ca-certificates gnupg openssl libcap jq && \
     unzip -d /bin vault_${VAULT_VERSION}_linux_amd64.zip && \
     cd /tmp && \
     rm -rf /tmp/build && \
-    apk del openssl && \
-    rm -rf /root/.gnupg
-
-# copy deps into the container
-COPY pkgs/* /usr/local/bin/
+    apk del openssl
 
 # /vault/logs is made available to use as a location to store audit logs, if
 # desired; /vault/file is made available to use as a location with the file
@@ -53,6 +49,9 @@ RUN mkdir -p /vault/logs && \
     mkdir -p /vault/file && \
     mkdir -p /vault/config && \
     chown -R vault:vault /vault
+
+# copy deps into the container
+COPY pkgs/* /usr/local/bin/
 
 # Expose the logs directory as a volume since there's potentially long-running
 # state in there

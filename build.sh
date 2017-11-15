@@ -1,5 +1,4 @@
 #!/bin/bash
-shopt -s nullglob
 
 TAG=$1
 BASE=$PWD
@@ -16,6 +15,17 @@ build_deps()
     done
 }
 
+if ! which make
+then
+  if apk add --no-cache alpine-sdk build-base
+  then
+    echo "done"
+  else
+    echo >&2 "Hmm, try something else. Sorry it didn't work out."
+    exit 2
+  fi
+fi
+
 if [[ -n "$TAG" ]] 
 then
   # create deps in pkgs path
@@ -23,10 +33,16 @@ then
 
   cd $BASE
 
+  if [[ $(find pkgs/ -maxdepth 1 -type f -name '[a-zA-Z]*' | wc -l) == 0 ]] 
+  then 
+    echo "WARN: Hmm. No dep packages in pkgs/; this is likely bad, but moving on."
+  fi
+
   # now build main vault container
   if docker build -t $TAG .
   then
-    sudo rm -rf pkgs/* 2>/dev/null
+    ls -altr pkgs/* 2>/dev/null
+    rm -rf pkgs/* 2>/dev/null
     echo "done"
   else
     ec=$?
