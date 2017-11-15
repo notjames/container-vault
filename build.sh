@@ -10,6 +10,8 @@ build_deps()
     do
       if [[ -d $dep ]]
       then
+        rm -rf pkg/* 2>/dev/null
+
         cd $dep && make
       fi
     done
@@ -41,8 +43,6 @@ then
   # now build main vault container
   if docker build -t $TAG .
   then
-    ls -altr pkgs/* 2>/dev/null
-    rm -rf pkgs/* 2>/dev/null
     echo "done"
   else
     ec=$?

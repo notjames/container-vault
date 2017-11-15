@@ -50,9 +50,6 @@ RUN mkdir -p /vault/logs && \
     mkdir -p /vault/config && \
     chown -R vault:vault /vault
 
-# copy deps into the container
-COPY pkgs/* /usr/local/bin/
-
 # Expose the logs directory as a volume since there's potentially long-running
 # state in there
 VOLUME /vault/logs
@@ -71,6 +68,10 @@ EXPOSE 8200
 # For production derivatives of this container, you shoud add the IPC_LOCK
 # capability so that Vault can mlock memory.
 COPY bin/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+
+# copy deps into the container
+COPY pkgs/* /usr/local/bin/
+
 ENTRYPOINT ["docker-entrypoint.sh"]
 
 # By default you'll get a single-node development server that stores everything
