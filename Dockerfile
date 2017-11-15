@@ -1,6 +1,15 @@
 FROM alpine:3.6
-MAINTAINER Jeff Mitchell <jeff@hashicorp.com> (@jefferai)
 LABEL maintainer="Samsung SDS - J. Conner <snafu.x@gmail.com>"
+LABEL purpose      "Hashicorp Vault container build for Samsung SDS auto-init chart"
+
+# Build artifacts for jo
+# Note that this is temporary until we get multi-stage builds working for our CICD system
+ENV JO_VER         "1.1"
+ENV JO_TARBALL     "jo-$JO_VER.tar.gz"
+ENV JO_URL         "https://github.com/jpmens/jo/releases/download/v$JO_VER/$JO_TARBALL"
+ENV JO_SHASUM      "63ed4766c2e0fcb5391a14033930329369f437d7060a11d82874e57e278bda5f  jo-1.1.tar.gz"
+ENV TMPDIR         "/var/tmp"
+ENV BUILD_DIR      "$TMPDIR/build"
 
 # This is the release of Vault to pull in.
 ENV VAULT_VERSION    0.8.3
@@ -16,13 +25,17 @@ COPY test/test-run-vault.sh /usr/local/bin/test-run-vault.sh
 
 # Create a vault user and group first so the IDs get set the same way,
 # even as the rest of this may change over time.
-RUN addgroup vault &&     adduser -S -G vault vault
+RUN addgroup vault &&     adduser -S -G vault vault && \
+    mkdir -p $BUILD_DIR && chmod 777 $BUILD_DIR 
+
+WORKDIR $BUILD_DIR
 
 # Set up certificates, our base tools, and Vault.
-RUN apk add --no-cache ca-certificates gnupg openssl libcap jq && \
+RUN apk add --no-cache alpine-sdk build-base ca-certificates gnupg openssl libcap jq && \
+    wget $JO_URL && echo "$JO_SHASUM" | sha256sum -c && \
+    mkdir jo && zcat $JO_TARBALL | tar -C jo -x --strip-components 1 && \
+    cd jo && ./configure --prefix /usr && make all && make install && cd .. && \
     gpg --keyserver pgp.mit.edu --recv-keys 91A6E7F85D05C65630BEF18951852D87348FFC4C && \
-    mkdir -p /tmp/build && \
-    cd /tmp/build && \
     wget https://releases.hashicorp.com/docker-base/${DOCKER_BASE_VERSION}/docker-base_${DOCKER_BASE_VERSION}_linux_amd64.zip && \
     wget https://releases.hashicorp.com/docker-base/${DOCKER_BASE_VERSION}/docker-base_${DOCKER_BASE_VERSION}_SHA256SUMS && \
     wget https://releases.hashicorp.com/docker-base/${DOCKER_BASE_VERSION}/docker-base_${DOCKER_BASE_VERSION}_SHA256SUMS.sig && \
@@ -37,8 +50,8 @@ RUN apk add --no-cache ca-certificates gnupg openssl libcap jq && \
     grep vault_${VAULT_VERSION}_linux_amd64.zip vault_${VAULT_VERSION}_SHA256SUMS | sha256sum -c && \
     unzip -d /bin vault_${VAULT_VERSION}_linux_amd64.zip && \
     cd /tmp && \
-    rm -rf /tmp/build && \
-    apk del openssl
+    rm -rf $BUILD_DIR && \
+    apk del openssl alpine-sdk build-base
 
 # /vault/logs is made available to use as a location to store audit logs, if
 # desired; /vault/file is made available to use as a location with the file
@@ -49,6 +62,8 @@ RUN mkdir -p /vault/logs && \
     mkdir -p /vault/file && \
     mkdir -p /vault/config && \
     chown -R vault:vault /vault
+
+WORKDIR /
 
 # Expose the logs directory as a volume since there's potentially long-running
 # state in there
@@ -68,9 +83,6 @@ EXPOSE 8200
 # For production derivatives of this container, you shoud add the IPC_LOCK
 # capability so that Vault can mlock memory.
 COPY bin/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
-
-# copy deps into the container
-COPY pkgs/* /usr/local/bin/
 
 ENTRYPOINT ["docker-entrypoint.sh"]
 
