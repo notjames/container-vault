@@ -35,14 +35,8 @@ then
 
   cd $BASE
 
-  echo "does symlink translate?"
-  ls -altr build/jo/pkg/
-
-  echo "checking pkgs:"
-  ls -altr pkgs/
-
-  echo "what about in /pkg?"
-  ls -altr /pkg
+  echo "None of those worked. Is jo anywhere on the system?"
+  find / -name jo
 
   if [[ $(find pkgs/ -maxdepth 1 -type f -name '[a-zA-Z]*' | wc -l) == 0 ]] 
   then 
