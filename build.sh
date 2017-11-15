@@ -35,9 +35,13 @@ then
 
   cd $BASE
 
-  ls -altr
+  echo "does symlink translate?"
+  ls -altr build/jo/pkg
 
-  if [[ $(find pkg/ -maxdepth 1 -type f -name '[a-zA-Z]*' | wc -l) == 0 ]] 
+  echo "checking pkgs:"
+  ls -altr pkgs/
+
+  if [[ $(find pkgs/ -maxdepth 1 -type f -name '[a-zA-Z]*' | wc -l) == 0 ]] 
   then 
     echo "WARN: Hmm. No dep packages in pkgs/; this is likely bad, but moving on."
   fi
