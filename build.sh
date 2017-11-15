@@ -36,7 +36,7 @@ then
   cd $BASE
 
   echo "does symlink translate?"
-  ls -altr build/jo/pkg
+  ls -altr build/jo/pkg/
 
   echo "checking pkgs:"
   ls -altr pkgs/
