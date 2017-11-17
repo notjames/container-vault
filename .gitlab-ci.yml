@@ -24,7 +24,7 @@ stages:
 build:
   stage: build
   script:
-  - ./build $IMAGE_DEVL_NAME
+  - docker build --force-rm --pull --no-cache --tag $IMAGE_DEVL_NAME .
   - docker push $IMAGE_DEVL_NAME
 
 test:
