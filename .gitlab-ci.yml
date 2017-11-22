@@ -61,7 +61,7 @@ publish-latest:
   variables:
     IMAGE_PROD_NAME: ${IMAGE_REPO}/${IMAGE_REPO_ORG}/${CI_PROJECT_NAME}:latest
   only:
-    - gitlab-ci-fix
+    - master
   script: *publish_script
 
 publish-version:
