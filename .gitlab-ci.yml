@@ -1,6 +1,5 @@
 ---
-#image: docker:latest
-image: quay.io/samsung_cnct/helm-registry-agent:v0.7.4-helm_2.6
+image: docker:latest
 
 services:
   - docker:dind
@@ -10,14 +9,13 @@ variables:
   DOCKER_HOST: tcp://localhost:2375
   IMAGE_REPO: quay.io
   IMAGE_REPO_ORG: samsung_cnct
-  CHART_NAME: chart-vault
+  CHART_NAME: container-vault
   IMAGE_DEVL_NAME: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME-$CI_PIPELINE_ID
   IMAGE_PROD_NAME: $IMAGE_REPO/$IMAGE_REPO_ORG/$CI_PROJECT_NAME:$CI_COMMIT_REF_NAME
   CHART_REGISTRY_URI: ${REGISTRY_HOST}/${REGISTRY_ORG}/${CHART_NAME}
 
 before_script:
   - docker info
-  - helm registry login -u ${REGISTRY_USERNAME} -p ${REGISTRY_PASSWORD} ${REGISTRY_HOST}
   - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
   - docker login -u $IMAGE_REPO_USER -p $IMAGE_REPO_PASSWORD $IMAGE_REPO
 
