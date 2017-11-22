@@ -1,3 +1,4 @@
+---
 image: docker:latest
 
 services:
@@ -8,11 +9,14 @@ variables:
   DOCKER_HOST: tcp://localhost:2375
   IMAGE_REPO: quay.io
   IMAGE_REPO_ORG: samsung_cnct
+  CHART_NAME: chart-vault
   IMAGE_DEVL_NAME: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME-$CI_PIPELINE_ID
   IMAGE_PROD_NAME: $IMAGE_REPO/$IMAGE_REPO_ORG/$CI_PROJECT_NAME:$CI_COMMIT_REF_NAME
+  CHART_REGISTRY_URI: ${REGISTRY_HOST}/${REGISTRY_ORG}/${CHART_NAME}
 
 before_script:
   - docker info
+  - helm registry login -u ${REGISTRY_USERNAME} -p ${REGISTRY_PASSWORD} ${REGISTRY_HOST}
   - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
   - docker login -u $IMAGE_REPO_USER -p $IMAGE_REPO_PASSWORD $IMAGE_REPO
 
@@ -40,7 +44,7 @@ test:
   - docker tag $IMAGE_DEVL_NAME $IMAGE_PROD_NAME
   - docker push $IMAGE_PROD_NAME
 
-publish-latest:
+publish-ci-latest:
   stage: publish
   variables:
     IMAGE_PROD_NAME: $IMAGE_REPO/$IMAGE_REPO_ORG/$CI_PROJECT_NAME:latest
@@ -54,3 +58,20 @@ publish-version:
     - /v[0-9]+\.[0-9]+\.[0-9]+[0-9A-Za-z-]?/
   script: *publish_script
 
+# beta channel is for internal tested release candidates
+publish-beta:
+  stage: publish
+  only:
+    - master
+  script:
+  - cd ${APP_NAME}
+  - helm registry push ${CHART_REGISTRY_URI} -c beta
+
+# prod channel is for official, vetted releases
+publish-prod:
+  stage: publish
+  only:
+    - /v[0-9]+\.[0-9]+\.[0-9]/
+  script:
+  - cd ${APP_NAME}
+  - helm registry push ${CHART_REGISTRY_URI} -c prod
