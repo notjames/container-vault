@@ -50,8 +50,11 @@ publish-beta:
   only:
     - master
   variables:
-    IMAGE_PROD_NAME: $IMAGE_NAME_BASE:beta
-  script: *publish_script
+    IMAGE_PROD_NAME: ${IMAGE_NAME_BASE}:beta
+  script:
+    - docker pull $IMAGE_DEVL_NAME
+    - docker tag $IMAGE_DEVL_NAME $IMAGE_PROD_NAME
+    - docker push $IMAGE_PROD_NAME
 
 publish-latest:
   stage: publish
@@ -59,6 +62,8 @@ publish-latest:
     IMAGE_PROD_NAME: $IMAGE_NAME_BASE:latest
   only:
     - master
+  variables:
+    IMAGE_PROD_NAME: $IMAGE_NAME_BASE:beta
   script: *publish_script
 
 publish-version:
