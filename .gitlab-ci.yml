@@ -1,3 +1,4 @@
+---
 image: docker:latest
 
 services:
@@ -10,6 +11,7 @@ variables:
   IMAGE_REPO_ORG: samsung_cnct
   IMAGE_DEVL_NAME: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME-$CI_PIPELINE_ID
   IMAGE_PROD_NAME: $IMAGE_REPO/$IMAGE_REPO_ORG/$CI_PROJECT_NAME:$CI_COMMIT_REF_NAME
+  CHART_REGISTRY_URI: ${REGISTRY_HOST}/${REGISTRY_ORG}/${PUBCHART_NAME}
 
 before_script:
   - docker info
@@ -32,7 +34,7 @@ test:
   script:
   - docker pull $IMAGE_DEVL_NAME
   - docker run -e RUN_TESTS=true $IMAGE_DEVL_NAME 
-
+    #
 #YAML templating -> https://git.cnct.io/help/ci/yaml/README.md#special-yaml-features
 .publish_script_template:
   script: &publish_script
@@ -40,7 +42,7 @@ test:
   - docker tag $IMAGE_DEVL_NAME $IMAGE_PROD_NAME
   - docker push $IMAGE_PROD_NAME
 
-publish-latest:
+publish-ci-latest:
   stage: publish
   variables:
     IMAGE_PROD_NAME: $IMAGE_REPO/$IMAGE_REPO_ORG/$CI_PROJECT_NAME:latest
@@ -54,3 +56,20 @@ publish-version:
     - /v[0-9]+\.[0-9]+\.[0-9]+[0-9A-Za-z-]?/
   script: *publish_script
 
+# beta channel is for internal tested release candidates
+publish-beta:
+  stage: publish
+  only:
+    - master
+  script:
+  - cd ${APP_NAME}
+  - helm registry push ${CHART_REGISTRY_URI} -c beta
+
+# prod channel is for official, vetted releases
+publish-prod:
+  stage: publish
+  only:
+    - /v[0-9]+\.[0-9]+\.[0-9]/
+  script:
+  - cd ${APP_NAME}
+  - helm registry push ${CHART_REGISTRY_URI} -c prod
