@@ -10,15 +10,15 @@ variables:
   IMAGE_REPO: quay.io
   IMAGE_REPO_ORG: samsung_cnct
   CHART_NAME: container-vault
-  IMAGE_NAME_BASE: $IMAGE_REPO/$IMAGE_REPO_ORG/$CI_PROJECT_NAME
-  IMAGE_DEVL_NAME: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME-$CI_PIPELINE_ID
-  IMAGE_PROD_NAME: $IMAGE_REPO/$IMAGE_REPO_ORG/$CI_PROJECT_NAME:$CI_COMMIT_REF_NAME
+  IMAGE_NAME_BASE: ${IMAGE_REPO}/${IMAGE_REPO_ORG}/${CI_PROJECT_NAME}
+  IMAGE_DEVL_NAME: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}-${CI_PIPELINE_ID}
+  IMAGE_PROD_NAME: ${IMAGE_REPO}/${IMAGE_REPO_ORG}/${CI_PROJECT_NAME}:${CI_COMMIT_REF_NAME}
   CHART_REGISTRY_URI: ${REGISTRY_HOST}/${REGISTRY_ORG}/${CHART_NAME}
 
 before_script:
   - docker info
-  - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
-  - docker login -u $IMAGE_REPO_USER -p $IMAGE_REPO_PASSWORD $IMAGE_REPO
+  - docker login -u gitlab-ci-token -p ${CI_JOB_TOKEN} ${CI_REGISTRY}
+  - docker login -u ${IMAGE_REPO_USER} -p ${IMAGE_REPO_PASSWORD} ${IMAGE_REPO}
 
 stages:
   - build
@@ -28,21 +28,21 @@ stages:
 build:
   stage: build
   script:
-    - docker build --force-rm --pull --no-cache --tag $IMAGE_DEVL_NAME .
-    - docker push $IMAGE_DEVL_NAME
+    - docker build --force-rm --pull --no-cache --tag ${IMAGE_DEVL_NAME} .
+    - docker push ${IMAGE_DEVL_NAME}
 
 test:
   stage: test
   script:
-    - docker pull $IMAGE_DEVL_NAME
-    - docker run -e RUN_TESTS=true $IMAGE_DEVL_NAME
+    - docker pull ${IMAGE_DEVL_NAME}
+    - docker run -e RUN_TESTS=true ${IMAGE_DEVL_NAME}
 
 # YAML templating -> https://git.cnct.io/help/ci/yaml/README.md#special-yaml-features
 .publish_script_template:
   script: &publish_script
-    - docker pull $IMAGE_DEVL_NAME
-    - docker tag $IMAGE_DEVL_NAME $IMAGE_PROD_NAME
-    - docker push $IMAGE_PROD_NAME
+    - docker pull ${IMAGE_DEVL_NAME}
+    - docker tag ${IMAGE_DEVL_NAME} ${IMAGE_PROD_NAME}
+    - docker push ${IMAGE_PROD_NAME}
 
 # beta channel is for internal tested release candidates
 publish-beta:
@@ -52,16 +52,16 @@ publish-beta:
   variables:
     IMAGE_PROD_NAME: ${IMAGE_NAME_BASE}:beta
   script:
-    - docker pull $IMAGE_DEVL_NAME
-    - docker tag $IMAGE_DEVL_NAME $IMAGE_PROD_NAME
-    - docker push $IMAGE_PROD_NAME
+    - docker pull ${IMAGE_DEVL_NAME}
+    - docker tag ${IMAGE_DEVL_NAME} ${IMAGE_PROD_NAME}
+    - docker push ${IMAGE_PROD_NAME}
 
 publish-latest:
   stage: publish
   variables:
-    IMAGE_PROD_NAME: $IMAGE_NAME_BASE:latest
+    IMAGE_PROD_NAME: ${IMAGE_NAME_BASE}:latest
   only:
-    - master
+    - gitlab-ci-fix
   script: *publish_script
 
 publish-version:
