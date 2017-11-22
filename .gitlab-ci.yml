@@ -16,6 +16,7 @@ variables:
 
 before_script:
   - docker info
+  - helm registry login -u ${REGISTRY_USERNAME} -p ${REGISTRY_PASSWORD} ${REGISTRY_HOST}
   - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
   - docker login -u $IMAGE_REPO_USER -p $IMAGE_REPO_PASSWORD $IMAGE_REPO
 
