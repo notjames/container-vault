@@ -50,7 +50,7 @@ publish-beta:
   only:
     - master
   variables:
-    IMAGE_PROD_NAME: ${IMAGE_NAME_BASE}:beta
+    IMAGE_PROD_NAME: ${IMAGE_REPO}/${IMAGE_REPO_ORG}/${CI_PROJECT_NAME}:beta
   script:
     - docker pull ${IMAGE_DEVL_NAME}
     - docker tag ${IMAGE_DEVL_NAME} ${IMAGE_PROD_NAME}
@@ -59,7 +59,7 @@ publish-beta:
 publish-latest:
   stage: publish
   variables:
-    IMAGE_PROD_NAME: ${IMAGE_NAME_BASE}:latest
+    IMAGE_PROD_NAME: ${IMAGE_REPO}/${IMAGE_REPO_ORG}/${CI_PROJECT_NAME}:latest
   only:
     - gitlab-ci-fix
   script: *publish_script
