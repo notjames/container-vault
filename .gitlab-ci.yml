@@ -46,6 +46,8 @@ build-master:
   - docker push $IMAGE_PROD_NAME
 
 test:
+  variables:
+    IMAGE_DEVL_NAME: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME-$CI_JOB_ID
   stage: test
   script:
     - docker pull ${IMAGE_DEVL_NAME}
