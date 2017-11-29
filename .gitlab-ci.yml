@@ -17,9 +17,6 @@ variables:
 
 before_script:
   - docker info
-
-before_script:
-  - docker info
   - docker login -u gitlab-ci-token -p ${CI_JOB_TOKEN} ${CI_REGISTRY}
   - docker login -u ${IMAGE_REPO_USER} -p ${IMAGE_REPO_PASSWORD} ${IMAGE_REPO}
 
@@ -31,6 +28,7 @@ stages:
 build:
   stage: build
   script:
+    - echo the current registry is 
     - docker build --force-rm --pull --no-cache --tag ${IMAGE_DEVL_NAME} .
     - docker push ${IMAGE_DEVL_NAME}
 
@@ -53,16 +51,16 @@ publish-beta:
   only:
     - master
   variables:
-    IMAGE_PROD_NAME: ${IMAGE_REPO}/${IMAGE_REPO_ORG}/${CI_PROJECT_NAME}:beta
+    IMAGE_PROD_NAME: ${REPO_REGISTRY_URI}:beta
   script:
     - docker pull ${IMAGE_DEVL_NAME}
     - docker tag ${IMAGE_DEVL_NAME} ${IMAGE_PROD_NAME}
     - docker push ${IMAGE_PROD_NAME}
 
-publish-latest:
+publish-stable:
   stage: publish
   variables:
-    IMAGE_PROD_NAME: ${IMAGE_REPO}/${IMAGE_REPO_ORG}/${CI_PROJECT_NAME}:latest
+    IMAGE_PROD_NAME: ${REPO_REGISTRY_URI}:stable
   only:
     - master
   script: *publish_script
