@@ -1,5 +1,4 @@
 ---
-# test
 image: docker:latest
 
 services:
