@@ -32,7 +32,7 @@ RUN addgroup vault &&     adduser -S -G vault vault && \
 WORKDIR $BUILD_DIR
 
 # Set up certificates, our base tools, and Vault.
-RUN apk add --no-cache alpine-sdk build-base msmtp mailx curl ca-certificates gnupg openssl libcap jq && \
+RUN apk add --no-cache alpine-sdk build-base msmtp mailx curl ca-certificates gnupg openssl libcap jq coreutils && \
     wget $JO_URL && echo "$JO_SHASUM" | sha256sum -c && \
     mkdir jo && zcat $JO_TARBALL | tar -C jo -x --strip-components 1 && \
     cd jo && ./configure --prefix /usr && make all && make install && cd .. && \
