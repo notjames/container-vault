@@ -56,7 +56,7 @@ build-master:
 test:
   stage: test
   script:
-    - echo "IMAGE_DEVL_NAME is $IMAGE_DEVL_NAME"
+    - /bin/echo "IMAGE_DEVL_NAME is $IMAGE_DEVL_NAME"
     - docker pull ${IMAGE_DEVL_NAME}
     - docker run -e RUN_TESTS=true ${IMAGE_DEVL_NAME}
 
