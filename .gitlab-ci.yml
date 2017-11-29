@@ -12,8 +12,7 @@ variables:
   REPO_NAME: vault
   IMAGE_NAME_BASE: ${IMAGE_REPO}/${IMAGE_REPO_ORG}/${CI_PROJECT_NAME}
   IMAGE_DEVL_NAME: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}-${CI_PIPELINE_ID}
-  IMAGE_PROD_NAME: ${IMAGE_REPO}/${IMAGE_REPO_ORG}/${REPO_NAME}:${CI_COMMIT_REF_NAME}
-  REPO_REGISTRY_URI: ${REGISTRY_HOST}/${REGISTRY_ORG}/${REPO_NAME}
+  IMAGE_PROD_NAME: ${REGISTRY_HOST}/${REGISTRY_ORG}/${REPO_NAME}:${CI_COMMIT_REF_NAME}
 
 before_script:
   - docker info
@@ -28,7 +27,6 @@ stages:
 build:
   stage: build
   script:
-    - echo the current registry is 
     - docker build --force-rm --pull --no-cache --tag ${IMAGE_DEVL_NAME} .
     - docker push ${IMAGE_DEVL_NAME}
 
@@ -51,16 +49,16 @@ publish-beta:
   only:
     - master
   variables:
-    IMAGE_PROD_NAME: ${REPO_REGISTRY_URI}:beta
+    IMAGE_PROD_NAME: ${IMAGE_REPO}/${IMAGE_REPO_ORG}/${CI_PROJECT_NAME}:beta
   script:
     - docker pull ${IMAGE_DEVL_NAME}
     - docker tag ${IMAGE_DEVL_NAME} ${IMAGE_PROD_NAME}
     - docker push ${IMAGE_PROD_NAME}
 
-publish-stable:
+publish-latest:
   stage: publish
   variables:
-    IMAGE_PROD_NAME: ${REPO_REGISTRY_URI}:stable
+    IMAGE_PROD_NAME: ${IMAGE_REPO}/${IMAGE_REPO_ORG}/${CI_PROJECT_NAME}:latest
   only:
     - master
   script: *publish_script
