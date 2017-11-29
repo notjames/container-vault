@@ -1,4 +1,4 @@
-FROM alpine:3.7
+FROM alpine:3.6
 
 LABEL maintainer   "Samsung SDS - J. Conner <snafu.x@gmail.com>"
 LABEL purpose      "Hashicorp Vault container build for Samsung SDS auto-init chart"
