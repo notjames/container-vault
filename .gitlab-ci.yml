@@ -5,70 +5,73 @@ services:
   - docker:dind
 
 variables:
-  DOCKER_DRIVER: overlay2
   DOCKER_HOST: tcp://localhost:2375
-  IMAGE_REPO: quay.io
-  IMAGE_REPO_ORG: samsung_cnct
-  REPO_NAME: vault
-  IMAGE_NAME_BASE: ${IMAGE_REPO}/${IMAGE_REPO_ORG}/${CI_PROJECT_NAME}
-  IMAGE_DEVL_NAME: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}-${CI_PIPELINE_ID}
-  IMAGE_PROD_NAME: ${IMAGE_REPO}/${IMAGE_REPO_ORG}/${REPO_NAME}:${CI_COMMIT_REF_NAME}
-  REPO_REGISTRY_URI: ${REGISTRY_HOST}/${REGISTRY_ORG}/${REPO_NAME}
-
-before_script:
-  - docker info
-
-before_script:
-  - docker info
-  - docker login -u gitlab-ci-token -p ${CI_JOB_TOKEN} ${CI_REGISTRY}
-  - docker login -u ${IMAGE_REPO_USER} -p ${IMAGE_REPO_PASSWORD} ${IMAGE_REPO}
+  DOCKER_DRIVER: overlay2
+  IMAGE_PROD_NAME: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
+  REGISTRY: quay.io
+  IMAGE_NAME: vault
+  # we set this to override to samsung_cnct in gitlab Group Variables
+  REGISTRY_USER: your_org
+  ROBOT_ACCOUNT: containervaultrw
+# Create a Gitlab Secret Variable called REGISTRY_PASSWORD and assign it the value of the registry robot docker login password.
+# DO NOT PASTE THIS PASSWORD HERE.
 
 stages:
   - build
   - test
   - publish
 
-build:
+before_script:
+  - docker info
+  - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+  - docker login ${REGISTRY} -u ${REGISTRY_USER}+${ROBOT_ACCOUNT} -p ${REGISTRY_PASSWORD}
+
+run_script:
+  - docker pull $IMAGE_PROD_NAME
+  # Any merge to master (i.e. a successful CI pass) will be tagged and pushed as latest
+  - docker tag ${IMAGE_PROD_NAME} ${REGISTRY}/${REGISTRY_USER}/${IMAGE_NAME}:$TAG
+  - docker push ${REGISTRY}/${REGISTRY_USER}/${IMAGE_NAME}:$TAG
+
+build-branch:
+  variables:
+    IMAGE_DEVL_NAME: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME-$CI_JOB_ID
   stage: build
+  only:
+    - branches
+  except:
+    - master
   script:
-    - docker build --force-rm --pull --no-cache --tag ${IMAGE_DEVL_NAME} .
-    - docker push ${IMAGE_DEVL_NAME}
+    - docker build -t $IMAGE_DEVL_NAME .
+    - docker push $IMAGE_DEVL_NAME
+
+build-master:
+  stage: build
+  only:
+    - master
+    - tags
+  script:
+    - docker build -t $IMAGE_PROD_NAME .
+    - docker push $IMAGE_PROD_NAME
 
 test:
   stage: test
   script:
+    - /bin/echo "IMAGE_DEVL_NAME is $IMAGE_DEVL_NAME"
     - docker pull ${IMAGE_DEVL_NAME}
     - docker run -e RUN_TESTS=true ${IMAGE_DEVL_NAME}
 
-# YAML templating -> https://git.cnct.io/help/ci/yaml/README.md#special-yaml-features
-.publish_script_template:
-  script: &publish_script
-    - docker pull ${IMAGE_DEVL_NAME}
-    - docker tag ${IMAGE_DEVL_NAME} ${IMAGE_PROD_NAME}
-    - docker push ${IMAGE_PROD_NAME}
-
-# beta channel is for internal tested release candidates
-publish-beta:
+publish-master:
+  variables:
+    - TAG: "latest"
   stage: publish
   only:
     - master
-  variables:
-    IMAGE_PROD_NAME: ${IMAGE_REPO}/${IMAGE_REPO_ORG}/${CI_PROJECT_NAME}:beta
-  script:
-    - docker pull ${IMAGE_DEVL_NAME}
-    - docker tag ${IMAGE_DEVL_NAME} ${IMAGE_PROD_NAME}
-    - docker push ${IMAGE_PROD_NAME}
+  script: &run_script
 
-publish-latest:
-  stage: publish
+publish-version-tag:
   variables:
-    IMAGE_PROD_NAME: ${IMAGE_REPO}/${IMAGE_REPO_ORG}/${CI_PROJECT_NAME}:latest
-  only:
-    - master
-  script: *publish_script
-
-publish-version:
+    - TAG: $CI_COMMIT_TAG
   stage: publish
   only:
-    - /v[0-9]+\.[0-9]+\.[0-9]+[0-9A-Za-z-]?/
-  script: *publish_script
+    - /v[0-9]+\.[0-9]+(\.[0-9]+[a-z]?)?/
+  script: &run_script
