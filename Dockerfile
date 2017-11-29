@@ -40,7 +40,7 @@ RUN apk add --no-cache alpine-sdk build-base msmtp mailx curl ca-certificates gn
     wget $JO_URL && echo "$JO_SHASUM" | sha256sum -c && \
     mkdir jo && zcat $JO_TARBALL | tar -C jo -x --strip-components 1 && \
     cd jo && ./configure --prefix /usr && make all && make install && cd .. && \
-    gpg --keyserver pgp.mit.edu --recv-keys 91A6E7F85D05C65630BEF18951852D87348FFC4C && \
+    gpg --keyserver ha.pool.sks-keyservers.net --recv-keys 91A6E7F85D05C65630BEF18951852D87348FFC4C && \
     wget https://releases.hashicorp.com/docker-base/${DOCKER_BASE_VERSION}/docker-base_${DOCKER_BASE_VERSION}_linux_amd64.zip && \
     wget https://releases.hashicorp.com/docker-base/${DOCKER_BASE_VERSION}/docker-base_${DOCKER_BASE_VERSION}_SHA256SUMS && \
     wget https://releases.hashicorp.com/docker-base/${DOCKER_BASE_VERSION}/docker-base_${DOCKER_BASE_VERSION}_SHA256SUMS.sig && \
