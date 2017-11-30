@@ -26,13 +26,6 @@ before_script:
   - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
   - docker login ${REGISTRY} -u ${REGISTRY_USER}+${ROBOT_ACCOUNT} -p ${REGISTRY_PASSWORD}
 
-run_script_template:
-  script: &run_script
-    - docker pull $IMAGE_PROD_NAME
-    # Any merge to master (i.e. a successful CI pass) will be tagged and pushed as latest
-    - docker tag ${IMAGE_PROD_NAME} ${REGISTRY}/${REGISTRY_USER}/${IMAGE_NAME}:$TAG
-    - docker push ${REGISTRY}/${REGISTRY_USER}/${IMAGE_NAME}:$TAG
-
 build-branch:
   variables:
     IMAGE_DEVL_NAME: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME-$CI_JOB_ID
@@ -60,6 +53,13 @@ test:
     - /bin/echo "IMAGE_DEVL_NAME is $IMAGE_DEVL_NAME"
     - docker pull ${IMAGE_DEVL_NAME}
     - docker run -e RUN_TESTS=true ${IMAGE_DEVL_NAME}
+
+run_script_template:
+  script: &run_script
+    - docker pull $IMAGE_PROD_NAME
+    # Any merge to master (i.e. a successful CI pass) will be tagged and pushed as latest
+    - docker tag ${IMAGE_PROD_NAME} ${REGISTRY}/${REGISTRY_USER}/${IMAGE_NAME}:$TAG
+    - docker push ${REGISTRY}/${REGISTRY_USER}/${IMAGE_NAME}:$TAG
 
 publish-master:
   variables:
