@@ -42,8 +42,8 @@ build-branch:
   except:
     - master
   script:
-    - docker build -t $IMAGE_DEVL_NAME .
-    - docker push $IMAGE_DEVL_NAME
+    - docker build -t ${IMAGE_DEVL_NAME} .
+    - docker push ${IMAGE_DEVL_NAME}
 
 build-master:
   stage: build
