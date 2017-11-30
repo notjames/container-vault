@@ -32,7 +32,7 @@ build-branch:
   except:
     - master
   script:
-    - /bin/echo "build branches: IMAGE_DEVL_NAME is $IMAGE_DEVL_NAME"
+    - /bin/echo "build branches IMAGE_DEVL_NAME is $IMAGE_DEVL_NAME"
     - docker build -t ${IMAGE_DEVL_NAME} .
     - docker push ${IMAGE_DEVL_NAME}
 
@@ -48,7 +48,7 @@ build-master:
 test:
   stage: test
   script:
-    - /bin/echo "test branch: IMAGE_DEVL_NAME is $IMAGE_DEVL_NAME"
+    - /bin/echo "test branch IMAGE_DEVL_NAME is $IMAGE_DEVL_NAME"
     - docker pull ${IMAGE_DEVL_NAME}
     - docker run -e RUN_TESTS=true ${IMAGE_DEVL_NAME}
 
