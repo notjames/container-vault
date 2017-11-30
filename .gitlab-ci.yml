@@ -26,11 +26,12 @@ before_script:
   - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
   - docker login ${REGISTRY} -u ${REGISTRY_USER}+${ROBOT_ACCOUNT} -p ${REGISTRY_PASSWORD}
 
-run_script:
-  - docker pull $IMAGE_PROD_NAME
-  # Any merge to master (i.e. a successful CI pass) will be tagged and pushed as latest
-  - docker tag ${IMAGE_PROD_NAME} ${REGISTRY}/${REGISTRY_USER}/${IMAGE_NAME}:$TAG
-  - docker push ${REGISTRY}/${REGISTRY_USER}/${IMAGE_NAME}:$TAG
+run_script_template:
+  script: &run_script
+    - docker pull $IMAGE_PROD_NAME
+    # Any merge to master (i.e. a successful CI pass) will be tagged and pushed as latest
+    - docker tag ${IMAGE_PROD_NAME} ${REGISTRY}/${REGISTRY_USER}/${IMAGE_NAME}:$TAG
+    - docker push ${REGISTRY}/${REGISTRY_USER}/${IMAGE_NAME}:$TAG
 
 build-branch:
   variables:
@@ -62,16 +63,16 @@ test:
 
 publish-master:
   variables:
-    - TAG: "latest"
+    TAG: "latest"
   stage: publish
   only:
     - master
-  script: &run_script
+  script: *run_script
 
 publish-version-tag:
   variables:
-    - TAG: $CI_COMMIT_TAG
+    TAG: $CI_COMMIT_TAG
   stage: publish
   only:
     - /v[0-9]+\.[0-9]+(\.[0-9]+[a-z]?)?/
-  script: &run_script
+  script: *run_script
