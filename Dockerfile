@@ -13,7 +13,7 @@ ENV TMPDIR         "/var/tmp"
 ENV BUILD_DIR      "$TMPDIR/build"
 
 # This is the release of Vault to pull in.
-ENV VAULT_VERSION    0.8.3
+ENV VAULT_VERSION    0.9.0
 ENV RUN_TESTS        false
 
 # build artifacts for kubectl
