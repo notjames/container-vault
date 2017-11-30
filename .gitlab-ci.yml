@@ -13,6 +13,7 @@ variables:
   # we set this to override to samsung_cnct in gitlab Group Variables
   REGISTRY_USER: your_org
   ROBOT_ACCOUNT: containervaultrw
+  IMAGE_DEVL_NAME: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME-$CI_JOB_ID
 # Create a Gitlab Secret Variable called REGISTRY_PASSWORD and assign it the value of the registry robot docker login password.
 # DO NOT PASTE THIS PASSWORD HERE.
 
@@ -27,8 +28,6 @@ before_script:
   - docker login ${REGISTRY} -u ${REGISTRY_USER}+${ROBOT_ACCOUNT} -p ${REGISTRY_PASSWORD}
 
 build-branch:
-  variables:
-    IMAGE_DEVL_NAME: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME-$CI_JOB_ID
   stage: build
   only:
     - branches
@@ -48,8 +47,6 @@ build-master:
     - docker push $IMAGE_PROD_NAME
 
 test:
-  variables:
-    IMAGE_DEVL_NAME: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME-$CI_JOB_ID
   stage: test
   script:
     - /bin/echo "IMAGE_DEVL_NAME is $IMAGE_DEVL_NAME"
