@@ -54,8 +54,8 @@ test:
     - docker pull ${IMAGE_DEVL_NAME}
     - docker run -e RUN_TESTS=true ${IMAGE_DEVL_NAME}
 
-run_script_template:
-  script: &run_script
+.publish_template:
+  script: &do_publish
     - docker pull $IMAGE_PROD_NAME
     # Any merge to master (i.e. a successful CI pass) will be tagged and pushed as latest
     - docker tag ${IMAGE_PROD_NAME} ${REGISTRY}/${REGISTRY_USER}/${IMAGE_NAME}:$TAG
@@ -67,7 +67,7 @@ publish-master:
   stage: publish
   only:
     - master
-  script: *run_script
+  script: *do_publish
 
 publish-version-tag:
   variables:
@@ -75,4 +75,4 @@ publish-version-tag:
   stage: publish
   only:
     - /v[0-9]+\.[0-9]+(\.[0-9]+[a-z]?)?/
-  script: *run_script
+  script: *do_publish
