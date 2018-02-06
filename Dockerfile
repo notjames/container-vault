@@ -13,12 +13,12 @@ ENV TMPDIR         "/var/tmp"
 ENV BUILD_DIR      "$TMPDIR/build"
 
 # This is the release of Vault to pull in.
-ENV VAULT_VERSION    0.9.0
+ENV VAULT_VERSION    0.9.3
 ENV RUN_TESTS        false
 
 # build artifacts for kubectl
 ENV K8S_BASEURL=https://storage.googleapis.com/kubernetes-release/release
-ENV K8S_VER=v1.8.4
+ENV K8S_VER=v1.9.0
 
 # This is the release of https://github.com/hashicorp/docker-base to pull in order
 # to provide HashiCorp-built versions of basic utilities like dumb-init and gosu.
